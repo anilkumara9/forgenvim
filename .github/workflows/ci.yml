@@ -1,0 +1,43 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  validate-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Neovim (Windows zip)
+        shell: pwsh
+        run: |
+          Invoke-WebRequest https://github.com/neovim/neovim/releases/download/v0.11.3/nvim-win64.zip -OutFile nvim.zip
+          Expand-Archive nvim.zip -DestinationPath . -Force
+          echo "$pwd\nvim-win64\bin" | Out-File -FilePath $env:GITHUB_PATH -Append
+      - name: PowerShell syntax
+        shell: pwsh
+        run: |
+          foreach ($f in Get-ChildItem scripts/*.ps1) {
+            [void][System.Management.Automation.Language.Parser]::ParseFile($f.FullName, [ref]$null, [ref]$null)
+            Write-Host "PS OK $($f.Name)"
+          }
+      - name: Validate core (no network, no plugins)
+        shell: pwsh
+        run: |
+          $env:FORGE_MINIMAL = "1"
+          nvim --headless -S scripts/validate.lua
+      - name: Install script (preview, isolated)
+        shell: pwsh
+        run: |
+          $env:LOCALAPPDATA = "$pwd\fake-localappdata"
+          .\scripts\install.ps1 -Preview
+          Test-Path "$env:LOCALAPPDATA\nvim-preview\init.lua"
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Neovim
+        run: |
+          curl -fsSLO https://github.com/neovim/neovim/releases/download/v0.11.3/nvim-linux-x86_64.tar.gz
+          tar xzf nvim-linux-x86_64.tar.gz && sudo cp -r nvim-linux-x86_64/* /usr/local/
+      - name: Validate core (no network, no plugins)
+        run: make validate
+      - name: Shell syntax
+        run: bash -n scripts/*.sh
