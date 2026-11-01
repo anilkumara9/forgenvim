@@ -54,6 +54,7 @@ map("n", "<leader>ai", cmd("ForgeAIInline"), { desc = "Inline AI (Avante/Copilot
 map("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "Code action" })
 map("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Rename symbol" })
 map("n", "<leader>f", function() require("conform").format({ async = true, lsp_format = "fallback" }) end, { desc = "Format buffer" })
+map("n", "<leader>w", "<cmd>write<cr>", { desc = "Save" })
 map("n", "<leader>xx", cmd("Trouble diagnostics toggle"), { desc = "Project diagnostics" })
 map("n", "<leader>xd", vim.diagnostic.open_float, { desc = "Line diagnostics" })
 map("n", "<leader>o", cmd("AerialToggle! right"), { desc = "Code outline" })

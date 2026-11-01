@@ -30,5 +30,7 @@ return {
   { "kevinhwang91/nvim-ufo", dependencies = { "kevinhwang91/promise-async" }, event = "BufReadPost",
     config = function() vim.o.foldcolumn = "1"; require("ufo").setup({ provider_selector = function() return { "treesitter", "indent" } end }) end },
   { "folke/trouble.nvim", cmd = "Trouble", opts = { focus = true } },
+  { "mihovilrak/scroll.nvim", cond = function() return require("forge.settings").get().scrollbars end,
+    event = "VeryLazy", opts = {} },
   { "folke/todo-comments.nvim", event = { "BufReadPost", "BufNewFile" }, opts = {} },
 }

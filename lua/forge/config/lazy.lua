@@ -13,7 +13,7 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
-  spec = { { import = "forge.plugins" } },
+  spec = { { import = "forge.plugins" }, require("forge.extensions").specs() },
   defaults = { lazy = true, version = false },
   install = { colorscheme = { "gruvbox", "habamax" } },
   checker = { enabled = false },

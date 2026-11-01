@@ -50,6 +50,7 @@ function M.apply()
 end
 function M.set(key, value) current[key] = value; M.save(); M.apply() end
 function M.toggle(key) M.set(key, not current[key]) end
+function M.reload() M.load(); M.apply(); vim.notify("Settings reloaded", vim.log.levels.INFO) end
 function M.cycle(key)
   for _, o in ipairs(M.options) do
     if o.key == key and o.values then

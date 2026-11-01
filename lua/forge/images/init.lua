@@ -12,4 +12,10 @@ vim.api.nvim_create_autocmd("BufReadCmd", {
     end
   end,
 })
+vim.api.nvim_create_user_command("ImageOpen", function(opts)
+  local file = opts.args ~= "" and opts.args or vim.api.nvim_buf_get_name(0)
+  if file == "" then
+    vim.ui.input({ prompt = "Image file: ", completion = "file" }, function(p) if p then vim.ui.open(p) end end)
+  else vim.ui.open(file) end
+end, { nargs = "?", complete = "file" })
 return M

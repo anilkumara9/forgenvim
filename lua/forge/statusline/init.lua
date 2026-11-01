@@ -47,16 +47,50 @@ function M.render()
       parts[#parts+1] = "%#ForgeBar#" .. (name == "" and "[No Name]" or vim.fn.fnamemodify(name, ":~:."))
       if vim.bo[buf].modified then parts[#parts+1] = " ●" end
     end
-    local counts = vim.diagnostic.count(buf)
-    local e = counts[vim.diagnostic.severity.ERROR] or 0
-    local wn = counts[vim.diagnostic.severity.WARN] or 0
-    if e > 0 then parts[#parts+1] = "  %#ForgeDiagE#E:" .. e end
-    if wn > 0 then parts[#parts+1] = "  %#ForgeDiagW#W:" .. wn end
+    -- Diagnostics grouped by source, like a source-control style breakdown.
+    local by_source = {}
+    for _, d in ipairs(vim.diagnostic.get(buf)) do
+      if d.severity == vim.diagnostic.severity.ERROR or d.severity == vim.diagnostic.severity.WARN then
+        local src = (d.source or "lsp"):gsub("%s+", "")
+        by_source[src] = (by_source[src] or 0) + 1
+      end
+    end
+    local srcs = vim.tbl_keys(by_source); table.sort(srcs)
+    for i = 1, math.min(3, #srcs) do
+      parts[#parts+1] = "  %#ForgeDiagW#" .. srcs[i] .. ":" .. by_source[srcs[i]]
+    end
+    -- Focused agent usage: scan the chat's last lines for a usage/limit hint.
+    if vim.b[buf].chat_id then
+      local lines = vim.api.nvim_buf_get_lines(buf, math.max(0, vim.api.nvim_buf_line_count(buf) - 80), -1, false)
+      for i = #lines, 1, -1 do
+        local line = lines[i]:gsub("%[[0-9;]*m", "")
+        local low = line:lower()
+        if low:find("usage", 1, true) or low:find("limit", 1, true) or line:find("%d+%%") then
+          local detail = vim.trim(line):sub(1, 28)
+          if detail ~= "" then parts[#parts+1] = "%#ForgeBarMuted#  " .. detail; break end
+        end
+      end
+    end
     local sc = vim.fn.searchcount({ maxcount = 0 })
     if sc and sc.total and sc.total > 0 then parts[#parts+1] = "%#ForgeBarMuted#  " .. sc.current .. "/" .. sc.total end
     local clients = vim.lsp.get_clients({ bufnr = buf })
-    if #clients > 0 then parts[#parts+1] = "%#ForgeBarMuted#  " .. clients[1].name end
-    parts[#parts+1] = "%=%#ForgeBarMuted# " .. (vim.bo[buf].filetype or "") .. "  "
+    if #clients > 0 then
+      local names = {}
+      for _, c in ipairs(clients) do names[#names+1] = c.name end
+      parts[#parts+1] = "%#ForgeBarMuted#  " .. table.concat(names, ","):sub(1, 32)
+    end
+    local okd, dap = pcall(require, "dap")
+    if okd and dap.session and dap.session() then parts[#parts+1] = "%#ForgeDiagE#  DEBUG" end
+    local indent = (vim.bo[buf].expandtab and "sp" or "tab") .. vim.bo[buf].shiftwidth
+    local fmt = ""
+    local okc, conform = pcall(require, "conform")
+    if okc and conform.list_formatters then
+      local fs = conform.list_formatters(buf)
+      if fs and fs[1] then fmt = fs[1].name end
+    end
+    parts[#parts+1] = "%=%#ForgeBarMuted# " .. indent .. (fmt ~= "" and ("  " .. fmt) or "")
+      .. "  " .. (vim.bo[buf].fileencoding ~= "" and vim.bo[buf].fileencoding or vim.o.encoding)
+      .. "  " .. (vim.bo[buf].filetype or "") .. "  "
     local pos = vim.api.nvim_win_get_cursor(0)
     parts[#parts+1] = "%#ForgeCursor# " .. pos[1] .. ":" .. pos[2] .. " "
     return table.concat(parts)

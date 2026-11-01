@@ -12,8 +12,13 @@ function M.new_context()
 end
 function M.close()
   local id = current_chat()
-  if id then require("forge.agents").close(id)
-  else require("forge.util").bufdelete() end
+  if id then require("forge.agents").close(id); return end
+  local buf = vim.api.nvim_get_current_buf()
+  if vim.bo[buf].modified then
+    vim.notify("Unsaved changes - save first (Ctrl+S), tab not closed", vim.log.levels.WARN)
+    return
+  end
+  require("forge.util").bufdelete()
 end
 function M.save()
   local buf = vim.api.nvim_get_current_buf()

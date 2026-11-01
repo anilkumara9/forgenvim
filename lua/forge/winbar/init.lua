@@ -64,6 +64,13 @@ local function editor_segment(winwidth)
     local buf = bufs[i]
     local name = vim.api.nvim_buf_get_name(buf)
     local label = name == "" and "[No Name]" or vim.fn.fnamemodify(name, ":t")
+    if require("forge.settings").get().icons then
+      local okd, dv = pcall(require, "nvim-web-devicons")
+      if okd then
+        local icon = dv.get_icon(label, label:match("%.(%w+)$"), { default = true })
+        if icon then label = icon .. " " .. label end
+      end
+    end
     if vim.bo[buf].modified then label = label .. " ●" end
     label = " " .. label .. " × "
     used = used + vim.fn.strdisplaywidth(label) + 1
@@ -103,6 +110,7 @@ end
 local function window_kind()
   local buf = vim.api.nvim_get_current_buf()
   local ft = vim.bo[buf].filetype
+  if vim.b[buf].forge_panel_kind == "gitmeta" then return "gitmeta" end
   if ft == "neo-tree" or vim.b[buf].forge_sidebar then return "sidebar" end
   if vim.b[buf].chat_id then return "chat" end
   local agents = package.loaded["forge.agents"]
@@ -113,6 +121,7 @@ function M.render()
   local ok, result = pcall(function()
     local kind = window_kind()
     local width = vim.api.nvim_win_get_width(0)
+    if kind == "gitmeta" then return "%#ForgeSideInactive# " .. (vim.b[vim.api.nvim_get_current_buf()].forge_panel_title or "") end
     if kind == "sidebar" then return sidebar_segment() end
     if kind == "chat" then return chat_segment() end
     return editor_segment(width)

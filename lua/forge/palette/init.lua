@@ -2,7 +2,22 @@
 local M = {}
 local function has(mod) return pcall(require, mod) end
 function M.files()
-  if has("fzf-lua") then require("fzf-lua").files() return end
+  if has("fzf-lua") then
+    require("fzf-lua").files({ hidden = true, no_ignore = false,
+      file_ignore_patterns = { "node_modules/", "%.git/", "dist/", "build/", "target/" },
+      actions = { ["default"] = function(selected)
+        if not selected or not selected[1] then return end
+        local path = require("fzf-lua.path").entry_to_file(selected[1])
+        local file = path and (path.path or path.stripped) or selected[1]
+        for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+          if vim.api.nvim_buf_get_name(buf) == vim.fn.fnamemodify(file, ":p") then
+            require("forge.tabs").focus_editor(); vim.api.nvim_set_current_buf(buf); return
+          end
+        end
+        require("forge.tabs").focus_editor(); vim.cmd("edit " .. vim.fn.fnameescape(file))
+      end } })
+    return
+  end
   if has("telescope.builtin") then require("telescope.builtin").find_files() return end
   vim.ui.input({ prompt = "Open file: " }, function(p) if p then vim.cmd.edit(p) end end)
 end
@@ -12,18 +27,30 @@ function M.grep()
   vim.cmd("grep ")
 end
 local actions = {
-  { "Find files", function() M.files() end }, { "Search project text", function() M.grep() end },
-  { "Sidebar panel (20%)", function() vim.cmd("ForgeSidebar") end },
-  { "Git status", function() vim.cmd("Neogit") end }, { "Git diff view", function() vim.cmd("DiffviewOpen") end },
+  { "Find file", function() M.files() end },
+  { "Search project text", function() M.grep() end },
+  { "Save file", function() require("forge.tabs").save() end },
+  { "Format current file", function() require("conform").format({ async = true, lsp_format = "fallback" }) end },
+  { "Open image", function() vim.cmd("ImageOpen") end },
+  { "Show diagnostics", function() vim.cmd("Trouble diagnostics toggle") end },
+  { "Git changes", function() vim.cmd("GitChanges") end },
+  { "Open Settings", function() vim.cmd("ForgeSettings") end },
+  { "Open Extensions", function() vim.cmd("SetupExtensions") end },
+  { "Open Themes", function() vim.cmd("SetupThemes") end },
+  { "Toggle file icons", function() require("forge.settings").toggle("icons") end },
+  { "Toggle line numbers", function() require("forge.settings").toggle("number") end },
+  { "Reload settings", function() require("forge.settings").reload() end },
+  { "Install extension", function() require("forge.sidebar").set_mode("extensions", true) end },
+  { "Restart Neovim", function() vim.cmd("ForgeRestart") end },
+  -- ForgeNvim extras
+  { "File explorer (20%)", function() vim.cmd("ForgeSidebar") end },
+  { "Git diff view", function() vim.cmd("DiffviewOpen") end },
   { "New AI chat", function() vim.cmd("ForgeAgentSelect") end },
-  { "Settings", function() vim.cmd("ForgeSettings") end }, { "Themes", function() vim.cmd("ForgeThemes") end },
-  { "Extensions (Lazy)", function() vim.cmd("Lazy") end }, { "Tools (Mason)", function() vim.cmd("Mason") end },
-  { "Format buffer", function() require("conform").format({ async = true }) end },
+  { "Tools (Mason)", function() vim.cmd("Mason") end },
   { "Run nearest test", function() require("neotest").run.run() end },
   { "Run task (Overseer)", function() vim.cmd("OverseerRun") end },
   { "Project search and replace", function() vim.cmd("GrugFar") end },
   { "Code outline", function() vim.cmd("AerialToggle! right") end },
-  { "Diagnostics", function() vim.cmd("Trouble diagnostics toggle") end },
   { "Health check", function() vim.cmd("ForgeHealth") end },
   { "Lazygit", function() if Snacks then Snacks.lazygit() end end },
 }
@@ -32,6 +59,8 @@ function M.open()
     function(choice) if choice then choice[2]() end end)
 end
 vim.api.nvim_create_user_command("ForgePalette", M.open, {})
+vim.api.nvim_create_user_command("FindProjectFiles", function() M.files() end, {})
+vim.api.nvim_create_user_command("FindProjectText", function() M.grep() end, {})
 vim.api.nvim_create_user_command("CommandPalette", M.open, {})
 vim.api.nvim_create_user_command("ForgeAIInline", function()
   if vim.env.FORGE_AI_INLINE == "1" then vim.cmd("AvanteAsk")

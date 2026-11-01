@@ -20,7 +20,7 @@ local CLIS = {
                   resume = function(id) return { "opencode", "--session", id } end },
   antigravity = { bin = "agy",      label = "Antigravity", cmd = "Antigravity", prefix = "Antigravity ",
                   start = function() return { "agy" } end,
-                  resume = function(id) return { "agy", "--conversation", id } end },
+                  resume = function(id) return { "agy", "--conversation", id } end, capture = "antigravity" },
   aider       = { bin = "aider",    label = "Aider",       cmd = "Aider",       prefix = "Aider ",
                   start = function() return { "aider" } end,
                   resume = function(id) return { "aider", "--restore-chat-history", id } end },
@@ -69,6 +69,18 @@ local function newest_codex_uuid(cwd, known)
     end
   end
   return best
+end
+local function newest_antigravity_id(cwd, known, baseline)
+  local fd = vim.uv.fs_open(vim.fn.expand("~/.gemini/antigravity-cli/cache/last_conversations.json"), "r", 384)
+  if not fd then return nil end
+  local st = vim.uv.fs_fstat(fd); local raw = st and vim.uv.fs_read(fd, st.size, 0) or ""
+  vim.uv.fs_close(fd)
+  local ok, cache = pcall(vim.json.decode, raw or "")
+  if not ok or type(cache) ~= "table" then return nil end
+  local workspace = vim.fn.fnamemodify(cwd, ":p"):gsub("/+$", "")
+  local id = cache[workspace]
+  if valid_id(id) and not known[id] and id ~= baseline then return id end
+  return nil
 end
 local function newest_claude_uuid(cwd, known)
   local abs = vim.fn.fnamemodify(cwd, ":p"):gsub("/$", "")
@@ -136,7 +148,12 @@ function M.new(name, opts)
   end
   if s.job <= 0 then s.exited = true; vim.notify("Could not start " .. cli.bin, vim.log.levels.ERROR) end
   if s.job > 0 and cli.capture and not valid_id(s.uuid) then
-    capture_after_start(id, cli.capture == "codex" and newest_codex_uuid or newest_claude_uuid)
+    if cli.capture == "antigravity" then
+      local baseline = newest_antigravity_id(vim.fn.getcwd(), {})
+      capture_after_start(id, function(cwd, known) return newest_antigravity_id(cwd, known, baseline) end)
+    else
+      capture_after_start(id, cli.capture == "codex" and newest_codex_uuid or newest_claude_uuid)
+    end
   end
   vim.keymap.set("t", "<Esc>", function() if not s.exited and s.job then vim.api.nvim_chan_send(s.job, "\27") end end,
     { buffer = buf, nowait = true, desc = "Send Escape to agent" })
@@ -174,6 +191,7 @@ function M.snapshot()
 end
 vim.api.nvim_create_autocmd("VimResized", { callback = function() if valid() then vim.api.nvim_win_set_width(M.win, width()) end end })
 vim.api.nvim_create_user_command("ForgeAgentSelect", M.select, {})
+vim.api.nvim_create_user_command("AgentSelect", M.select, {})
 for _, name in ipairs(M.order) do
   vim.api.nvim_create_user_command(CLIS[name].cmd, function() M.toggle(name) end, {})
 end
