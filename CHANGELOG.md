@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.4.1
+
+- Git panel stack now matches the reference layout exactly: the commit
+  composer sits above the change list, and the log below carries its
+  COMMITS (count) header, the "Enter show  Tab files" help line, and
+  decorated graph entries (head, branches, tags).
+- Composer Tab returns to the change list.
+
+
 ## 1.4.0
 
 The interface release: every surface now follows one design system driven

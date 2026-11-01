@@ -247,9 +247,9 @@ function M.git_ensure_subwindows()
   if not (M.gitstate.comp_win and vim.api.nvim_win_is_valid(M.gitstate.comp_win)) then
     local cur = vim.api.nvim_get_current_win()
     vim.api.nvim_set_current_win(list_win)
-    vim.cmd("belowright split")
+    vim.cmd("aboveleft 5split")
     M.gitstate.comp_win = vim.api.nvim_get_current_win()
-    vim.api.nvim_win_set_height(M.gitstate.comp_win, 4)
+    vim.api.nvim_win_set_height(M.gitstate.comp_win, 5)
     vim.wo[M.gitstate.comp_win].winfixheight = true
     if not (M.gitstate.comp_buf and vim.api.nvim_buf_is_valid(M.gitstate.comp_buf)) then
       M.gitstate.comp_buf = vim.api.nvim_create_buf(false, true)
@@ -264,33 +264,39 @@ function M.git_ensure_subwindows()
     vim.keymap.set({ "n", "i" }, "<C-CR>", function() M.git_commit() end, { buffer = cbuf })
     vim.keymap.set("n", "C", function() M.git_commit() end, { buffer = cbuf })
     vim.keymap.set("n", "<Tab>", function()
-      if M.gitstate.log_win and vim.api.nvim_win_is_valid(M.gitstate.log_win) then vim.api.nvim_set_current_win(M.gitstate.log_win) end
+      if valid_win() then vim.api.nvim_set_current_win(M.win) end
     end, { buffer = cbuf })
     vim.keymap.set("n", "q", function() if valid_win() then vim.api.nvim_set_current_win(M.win) end end, { buffer = cbuf })
     if vim.api.nvim_win_is_valid(cur) and cur ~= M.gitstate.comp_win then vim.api.nvim_set_current_win(cur) end
   end
   if not (M.gitstate.log_win and vim.api.nvim_win_is_valid(M.gitstate.log_win)) then
     local cur = vim.api.nvim_get_current_win()
-    vim.api.nvim_set_current_win(M.gitstate.comp_win)
+    vim.api.nvim_set_current_win(list_win)
     vim.cmd("belowright split")
     M.gitstate.log_win = vim.api.nvim_get_current_win()
-    vim.api.nvim_win_set_height(M.gitstate.log_win, math.max(5, math.floor(vim.o.lines * 0.30)))
+    vim.api.nvim_win_set_height(M.gitstate.log_win, math.max(3, math.floor(vim.o.lines * 0.30)))
     vim.wo[M.gitstate.log_win].winfixheight = true
     if vim.api.nvim_win_is_valid(cur) and cur ~= M.gitstate.log_win then vim.api.nvim_set_current_win(cur) end
   end
   local log_buf = vim.api.nvim_create_buf(false, true)
   vim.bo[log_buf].buftype = "nofile"; vim.bo[log_buf].bufhidden = "wipe"
   vim.b[log_buf].forge_panel_kind = "gitmeta"
-  local log = git_out({ "log", "--graph", "--oneline", "-30" })
-  local llines = {}
-  if log == "" then llines = { " (no commits yet)" }
-  else for line in vim.gsplit(log, "\n", { plain = true, trimempty = true }) do llines[#llines+1] = " " .. line end end
+  local log = git_out({ "-c", "color.ui=never", "log", "--graph", "--oneline", "--decorate", "--no-color", "--max-count=40" })
+  local entries = {}
+  for line in vim.gsplit(log, "\n", { plain = true, trimempty = true }) do entries[#entries+1] = line end
+  local llines = { "  COMMITS  (" .. #entries .. ")", "  Enter show  Tab files" }
+  if #entries == 0 then llines[#llines+1] = "     No commits"
+  else for _, e in ipairs(entries) do llines[#llines+1] = " " .. e end end
   vim.api.nvim_buf_set_lines(log_buf, 0, -1, false, llines)
   vim.bo[log_buf].modifiable = false
   vim.b[log_buf].forge_label = "ForgeGitLog"
   vim.api.nvim_win_set_buf(M.gitstate.log_win, log_buf)
+  paint_hl(log_buf, 0, "GitButton")
+  paint_hl(log_buf, 1, "GitHelp")
+  for i, e in ipairs(entries) do paint_hl(log_buf, i + 1, e:match("(%x%x%x%x%x%x%x+)") and "GitButton" or "GitHelp") end
   vim.keymap.set("n", "<CR>", function()
-    local hash = vim.api.nvim_get_current_line():match("([0-9a-f]+)%s")
+    if vim.api.nvim_win_get_cursor(0)[1] <= 2 then return end
+    local hash = vim.api.nvim_get_current_line():match("(%x%x%x%x%x%x%x+)")
     if hash then
       local win = require("forge.tabs").focus_editor()
       if win then
