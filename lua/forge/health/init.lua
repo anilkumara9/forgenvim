@@ -9,7 +9,16 @@ function M.report()
   lines[#lines+1] = "  theme: " .. require("forge.settings").get().theme
   return lines
 end
-function M.open() vim.cmd("botright split"); vim.api.nvim_buf_set_lines(0, 0, -1, false, M.report()); vim.bo.buftype = "nofile" end
+function M.open()
+  -- Always render into a fresh scratch buffer: splitting from a plugin
+  -- manager or other read-only buffer used to inherit it and crash.
+  vim.cmd("botright split")
+  local buf = vim.api.nvim_create_buf(false, true)
+  vim.api.nvim_win_set_buf(0, buf)
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, M.report())
+  vim.bo[buf].buftype = "nofile"; vim.bo[buf].modifiable = false
+  vim.b[buf].forge_label = "ForgeHealth"
+end
 vim.api.nvim_create_user_command("ForgeHealth", M.open, {})
 vim.api.nvim_create_user_command("ForgeDoctor", M.open, {})
 return M

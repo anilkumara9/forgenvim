@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.6.0
+
+Full-section screenshot audit fixes (every panel exercised live):
+
+- Command palette: the reference "Color Theme" action was missing;
+  it now sits in its exact slot (after Open Themes) and opens a theme
+  picker that applies on selection.
+- Diagnostics (Trouble): the panel crashed on current trouble.nvim -
+  its renderer indexes icons.indent, so icons=false is invalid there.
+  The same plain, icon-free look is now expressed with a complete
+  blank-glyph icons table; the panel renders grouped diagnostics with
+  source, code and position.
+- ForgeHealth: opening it from a read-only plugin buffer (Mason/Lazy)
+  inherited that buffer and crashed on set_lines. It now always
+  renders into a fresh scratch buffer.
+
+
 ## 1.5.1
 
 - Post-audit follow-up: a few Tree-sitter grammars shell out to the

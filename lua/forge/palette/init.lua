@@ -38,6 +38,12 @@ local actions = {
   { "Open Settings", function() vim.cmd("ForgeSettings") end },
   { "Open Extensions", function() vim.cmd("SetupExtensions") end },
   { "Open Themes", function() vim.cmd("SetupThemes") end },
+  { "Color Theme", function()
+      local themes = require("forge.themes")
+      vim.ui.select(themes.list, { prompt = "Color Theme",
+        format_item = function(id) return themes.label(id) end },
+        function(id) if id then themes.apply(id) end end)
+    end },
   { "Toggle file icons", function() require("forge.settings").toggle("icons") end },
   { "Toggle line numbers", function() require("forge.settings").toggle("number") end },
   { "Reload settings", function() require("forge.settings").reload() end },
