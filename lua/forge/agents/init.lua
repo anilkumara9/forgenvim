@@ -25,6 +25,7 @@ local CLIS = {
                   start = function() return { "aider" } end,
                   resume = function(id) return { "aider", "--restore-chat-history", id } end },
 }
+M.CLIS = CLIS
 M.order = { "codex", "cursor", "gemini", "claude", "opencode", "antigravity", "aider" }
 local function width() return math.max(24, math.floor(vim.o.columns * 0.28)) end
 local function valid() return M.win and vim.api.nvim_win_is_valid(M.win) end

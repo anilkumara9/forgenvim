@@ -26,9 +26,11 @@ return {
         go = { "golangcilint" }, lua = { "luacheck" }, dockerfile = { "hadolint" }, terraform = { "tflint" },
         php = { "phpstan" }, ruby = { "rubocop" }, sh = { "shellcheck" }, markdown = { "markdownlint" } }
       vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" },
-        { callback = function() pcall(lint.try_lint) end })
+        { callback = function() pcall(lint.try_lint, nil, { ignore_errors = true }) end })
     end },
-  { "WhoIsSethDaniel/mason-tool-installer.nvim", dependencies = { "mason-org/mason.nvim" }, cmd = { "MasonToolsInstall", "MasonToolsUpdate" },
+  { "WhoIsSethDaniel/mason-tool-installer.nvim", dependencies = { "mason-org/mason.nvim" },
+    event = { "BufReadPre", "BufNewFile" }, cmd = { "MasonToolsInstall", "MasonToolsUpdate" },
     opts = { ensure_installed = { "prettierd","stylua","shfmt","ruff","debugpy","codelldb","js-debug-adapter",
-      "delve","gofumpt","goimports","clang-format","shellcheck","eslint_d","luacheck" }, auto_update = false } },
+      "delve","gofumpt","goimports","clang-format","shellcheck","eslint_d","luacheck" }, auto_update = false,
+      run_on_start = true } },
 }

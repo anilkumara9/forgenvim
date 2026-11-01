@@ -1,5 +1,29 @@
 # Changelog
 
+## 1.5.0
+
+The audit and extras release. A from-zero integration pass on Neovim
+0.12 found and fixed three silent integration defects, and layered four
+Forge-only capabilities on top of the core environment (core layout,
+panels and chrome unchanged):
+
+- Tree-sitter: the main-branch API needs an explicit setup() before
+  install(); without it parser installation died inside the plugin.
+  The removed jsonc grammar was dropped from the parser list, and
+  textobjects got their main-branch setup plus select keymaps.
+- Mason tool installer was lazy-loaded on its own commands, so its
+  ensure_installed list (prettierd, stylua, eslint_d and friends) never
+  ran. It now starts with the first buffer, and linting a file whose
+  linter binary is missing stays silent instead of erroring.
+- ForgeAgents: Mission Control board for all AI sessions (jump, close,
+  resume in place).
+- ForgeSnapshot: named workspace snapshots (buffers, agents, theme).
+- ForgeAiCommit: drafts a commit message from the staged diff with an
+  installed agent CLI, straight into the git composer.
+- ForgeBench: readiness board (plugins, startup time, parsers, tools,
+  agent CLIs, sessions, themes).
+
+
 ## 1.4.1
 
 - Git panel stack now matches the reference layout exactly: the commit

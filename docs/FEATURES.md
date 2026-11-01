@@ -23,8 +23,25 @@ Mason tools and installs the pick.
 
 ## Source control panel
 
-`Ctrl+G` opens three stacked windows in the sidebar column: the change
-list (buttons run with Enter, keys `s`/`u`/`x`, capitals for all, `d`
-Check Diff, `P` push), the commit composer (`i` to type, `C` or
-Ctrl+Enter commits), and the COMMITS log at 30% height (Enter opens the
-commit in the editor).
+`Ctrl+G` opens three stacked windows in the sidebar column: the commit
+composer on top (placeholder shows the target branch, `i` types,
+Ctrl+Enter commits), the change list in the middle (buttons run with
+Enter, keys `s`/`u`/`x`, capitals for all, `d` Check Diff, `P` push),
+and the COMMITS log at 30% height (Enter opens the commit in the editor).
+
+## Forge extras
+
+Capabilities layered on top of the core environment, as plain commands:
+
+- `:ForgeAgents` - Mission Control: every AI session in one board with
+  its CLI, live state and saved id; Enter jumps to it, `x` closes it,
+  `r` resumes it in place.
+- `:ForgeSnapshot save|load|list|delete <name>` - named snapshots of the
+  whole workspace (open buffers incl. unsaved content, agent sessions,
+  theme), beyond the automatic per-project session.
+- `:ForgeAiCommit` - drafts a commit message for the staged diff with
+  whichever agent CLI is installed (Claude, Codex, Gemini, Cursor Agent
+  or OpenCode) and drops it into the git composer for review.
+- `:ForgeBench` - readiness board: plugin load state and startup time,
+  installed syntax parsers and Mason tools, which agent CLIs are on
+  PATH, open sessions and theme count.
