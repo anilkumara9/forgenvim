@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.5.1
+
+- Post-audit follow-up: a few Tree-sitter grammars shell out to the
+  `tree-sitter` CLI while building and failed without it. The CLI is
+  now in the Mason tool installer's ensure list, so it lands on first
+  run alongside the other tools.
+
+
 ## 1.5.0
 
 The audit and extras release. A from-zero integration pass on Neovim

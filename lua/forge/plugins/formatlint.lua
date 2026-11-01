@@ -31,6 +31,6 @@ return {
   { "WhoIsSethDaniel/mason-tool-installer.nvim", dependencies = { "mason-org/mason.nvim" },
     event = { "BufReadPre", "BufNewFile" }, cmd = { "MasonToolsInstall", "MasonToolsUpdate" },
     opts = { ensure_installed = { "prettierd","stylua","shfmt","ruff","debugpy","codelldb","js-debug-adapter",
-      "delve","gofumpt","goimports","clang-format","shellcheck","eslint_d","luacheck" }, auto_update = false,
+      "delve","gofumpt","goimports","clang-format","shellcheck","eslint_d","luacheck","tree-sitter-cli" }, auto_update = false,
       run_on_start = true } },
 }
