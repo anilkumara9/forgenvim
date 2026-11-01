@@ -114,7 +114,11 @@ function M.active_label()
 end
 function M.show(id)
   local s = M.sessions[id]; if not s or s.exited or not vim.api.nvim_buf_is_valid(s.buf) then return end
-  if not valid() then vim.cmd("botright vsplit"); M.win = vim.api.nvim_get_current_win() end
+  if not valid() then
+    local okf, tabs = pcall(require, "forge.tabs")
+    if okf and tabs.focus_editor then tabs.focus_editor() end
+    vim.cmd("botright vsplit"); M.win = vim.api.nvim_get_current_win()
+  end
   vim.api.nvim_set_current_win(M.win); vim.api.nvim_win_set_buf(M.win, s.buf)
   vim.api.nvim_win_set_width(M.win, width()); vim.wo[M.win].winfixwidth = true
   vim.wo[M.win].wrap = false; vim.wo[M.win].number = false; vim.wo[M.win].relativenumber = false

@@ -1,6 +1,6 @@
 -- Command palette + pickers, with graceful fallbacks when plugins are absent.
 local M = {}
-local function has(mod) return pcall(require, mod) end
+local function has(mod) local ok, m = pcall(require, mod); return ok and type(m) == "table" end
 function M.files()
   if has("fzf-lua") then
     require("fzf-lua").files({ hidden = true, no_ignore = false,

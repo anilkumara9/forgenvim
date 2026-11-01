@@ -226,7 +226,7 @@ function M.git_ensure_subwindows()
       M.gitstate.comp_buf = vim.api.nvim_create_buf(false, true)
       vim.bo[M.gitstate.comp_buf].buftype = "acwrite"; vim.bo[M.gitstate.comp_buf].swapfile = false
       vim.b[M.gitstate.comp_buf].forge_panel_kind = "gitmeta"
-      vim.b[M.gitstate.comp_buf].forge_panel_title = "Commit message - C or Ctrl+Enter commits"
+      vim.b[M.gitstate.comp_buf].forge_panel_title = "✎ Commit message"
       pcall(vim.api.nvim_buf_set_name, M.gitstate.comp_buf, "ForgeCommitMessage")
       vim.api.nvim_create_autocmd("BufWriteCmd", { buffer = M.gitstate.comp_buf, callback = function() M.git_commit() end })
     end

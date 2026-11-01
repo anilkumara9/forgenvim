@@ -1,6 +1,17 @@
 # Changelog
 
-## 1.3.0 - 2026-11-02
+## 1.3.1 - 2026-11-02
+
+- One sidebar window, owned end to end: the file tree now renders inside
+  the sidebar window instead of opening a second one, so switching modes
+  (Files, Git, Settings, Themes, Extensions) never creates extra columns.
+- Removed the leftover default tabline; tabs live only in the top bar.
+- Chat panes split from the editor window, never from the sidebar.
+- Sidebar header compacts itself in narrow windows so all five modes stay
+  visible; the commit composer title fits its window.
+- Windows bootstrap now installs the fzf picker backend alongside ripgrep
+  and fd; the file picker degrades gracefully if its backend is missing.
+
 
 - Source control panel rebuilt as three stacked windows: change list with
   action buttons ([Commit] [Check Diff] [Push] [Stage All] [Unstage All]

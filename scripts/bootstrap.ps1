@@ -11,7 +11,7 @@ if (-not (Get-Command nvim -ErrorAction SilentlyContinue)) {
   if (Get-Command winget -ErrorAction SilentlyContinue) { winget install --id Neovim.Neovim -e --silent } else { Write-Host "Install Neovim 0.11+ from https://github.com/neovim/neovim/releases"; exit 1 }
 }
 # Optional but recommended tools (search, JS tooling, native builds)
-foreach ($Pkg in @("BurntSushi.ripgrep.MSVC","sharkdp.fd","OpenJS.NodeJS.LTS","Microsoft.VisualStudio.2022.BuildTools")) {
+foreach ($Pkg in @("BurntSushi.ripgrep.MSVC","sharkdp.fd","junegunn.fzf","OpenJS.NodeJS.LTS","Microsoft.VisualStudio.2022.BuildTools")) {
   if (Get-Command winget -ErrorAction SilentlyContinue) { winget install --id $Pkg -e --silent 2>$null | Out-Null }
 }
 if (Test-Path (Join-Path $HomeDir ".git")) { git -C $HomeDir pull --ff-only } else { git clone --depth 1 $Repo $HomeDir }

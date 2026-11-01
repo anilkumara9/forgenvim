@@ -37,15 +37,20 @@ local side_ids = { files = 1, git = 2, settings = 3, themes = 4, extensions = 5 
 local function sidebar_segment()
   local mode = "files"
   local ok, sb = pcall(require, "forge.sidebar"); if ok and sb.mode then mode = sb.mode end
-  local parts = { " " }
-  for _, m in ipairs(side_modes) do
+  local w = vim.api.nvim_win_get_width(vim.api.nvim_get_current_win())
+  local parts = {}
+  if w >= 52 then parts[#parts + 1] = " " end
+  for i, m in ipairs(side_modes) do
     local group = (m[1] == mode) and "ForgeSideActive" or "ForgeSideInactive"
-    local marker = (m[1] == mode) and "● " or "○ "
-    parts[#parts+1] = click(side_ids[m[1]], "v:lua.require'forge.winbar'.click_side_by_id", marker .. m[2], group) .. " │ "
+    local text
+    if w >= 52 then text = ((m[1] == mode) and "● " or "○ ") .. m[2]
+    elseif w >= 37 then text = m[2]
+    else text = m[2]:sub(1, 1) end
+    parts[#parts + 1] = click(side_ids[m[1]], "v:lua.require'forge.winbar'.click_side_by_id", text, group)
+    if i < #side_modes then parts[#parts + 1] = (w >= 52) and " │ " or "│" end
   end
   return table.concat(parts)
 end
-function M.click_side_by_id(id) for name, i in pairs(side_ids) do if i == id then M.click_side(name) end end end
 local function editor_buffers()
   local out = {}
   for _, buf in ipairs(vim.api.nvim_list_bufs()) do

@@ -10,7 +10,7 @@ return {
     opts = {
       close_if_last_window = false, popup_border_style = "rounded",
       filesystem = { follow_current_file = { enabled = true }, use_libuv_file_watcher = true,
-        window = { width = function() return math.max(24, math.floor(vim.o.columns * 0.20)) end } },
+        window = { position = "current" } },
       git_status = { window = { width = function() return math.max(24, math.floor(vim.o.columns * 0.20)) end } },
       default_component_configs = { indent = { with_expanders = true }, git_status = { symbols = {
         added = "+", modified = "~", deleted = "x", renamed = "r", untracked = "?", ignored = "/", unstaged = "u", staged = "s", conflict = "!" } } },
