@@ -5,7 +5,7 @@ function M.current()
   local buf = vim.api.nvim_get_current_buf()
   local items = {}
   local function add(label, fn) items[#items+1] = { label = label, fn = fn } end
-  local in_panel = vim.b[buf].forge_sidebar or vim.bo[buf].filetype == "neo-tree"
+  local in_panel = vim.b[buf].forge_sidebar or vim.bo[buf].filetype == "NvimTree"
   if in_panel then
     add("Open Files view", function() require("forge.sidebar").set_mode("files", true) end)
     add("Open Git view", function() require("forge.sidebar").set_mode("git", true) end)

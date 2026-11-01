@@ -1,5 +1,5 @@
 return {
-  { "lewis6991/gitsigns.nvim", event = { "BufReadPost", "BufNewFile" }, opts = { current_line_blame = false,
+  { "lewis6991/gitsigns.nvim", event = { "BufReadPost", "BufNewFile" }, opts = { current_line_blame = true, current_line_blame_opts = { delay = 700 },
       signs = { add = { text = "+" }, change = { text = "~" }, delete = { text = "-" }, topdelete = { text = "-" }, changedelete = { text = "~" } } } },
   { "tpope/vim-fugitive", cmd = { "Git", "Gdiffsplit", "Gblame" } },
   { "sindrets/diffview.nvim", cmd = { "DiffviewOpen", "DiffviewFileHistory" }, opts = {} },

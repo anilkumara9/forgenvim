@@ -3,7 +3,8 @@ local M = {}
 local function has(mod) local ok, m = pcall(require, mod); return ok and type(m) == "table" end
 function M.files()
   if has("fzf-lua") then
-    require("fzf-lua").files({ hidden = true, no_ignore = false,
+    local fd_cmd = vim.fn.executable("fd") == 1 and "fd --type f --hidden --exclude .git --exclude node_modules --exclude target --exclude dist --exclude build" or nil
+    require("fzf-lua").files({ hidden = true, no_ignore = false, cmd = fd_cmd,
       file_ignore_patterns = { "node_modules/", "%.git/", "dist/", "build/", "target/" },
       actions = { ["default"] = function(selected)
         if not selected or not selected[1] then return end

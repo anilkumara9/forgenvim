@@ -1,6 +1,6 @@
 -- Headless validator: load core in minimal mode and assert the public contract.
 vim.env.FORGE_MINIMAL = "1"
-local root = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":h:h")
+local root = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":p:h:h")
 vim.opt.rtp:prepend(root)
 vim.cmd("luafile " .. root .. "/init.lua")
 local fails = {}

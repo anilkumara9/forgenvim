@@ -48,7 +48,15 @@ function M.apply()
   vim.o.scrolloff = current.scrolloff
   vim.o.ignorecase = current.ignorecase; vim.o.smartcase = current.smartcase
 end
-function M.set(key, value) current[key] = value; M.save(); M.apply() end
+function M.default(key) return M.defaults[key] end
+function M.reset(key) if M.defaults[key] ~= nil then M.set(key, M.defaults[key]) end end
+function M.set_silent(key, value) current[key] = value; M.save() end
+function M.set(key, value)
+  current[key] = value; M.save(); M.apply()
+  if key == "icons" then pcall(function() require("forge.tree").apply_icons() end) end
+  if key == "theme" then pcall(function() require("forge.themes").apply(value) end) end
+  if key == "transparent" then pcall(function() require("forge.appearance").apply_highlights() end) end
+end
 function M.toggle(key) M.set(key, not current[key]) end
 function M.reload() M.load(); M.apply(); vim.notify("Settings reloaded", vim.log.levels.INFO) end
 function M.cycle(key)

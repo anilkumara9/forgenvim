@@ -1,5 +1,36 @@
 # Changelog
 
+## 1.4.0
+
+The interface release: every surface now follows one design system driven
+by per-theme chrome tokens (accent, ink, bar fill, separators, mode
+colours), so the whole UI recolours coherently with the active theme.
+
+- Sidebar header: the active mode is a filled pill with icon and label,
+  the other modes show as icons, joined by powerline separators.
+- Editor and chat tab strips rebuilt with powerline dividers, per-file
+  icon colours, overflow cycling, and right-aligned chat tabs with the
+  close button first.
+- Statusline rebuilt as one filled bar: mode block with a powerline cap,
+  git branch and hunks, focused file or chat, agent usage, then search
+  position, diagnostics grouped by source, language servers, file
+  details, and a filled cursor block.
+- File tree is now nvim-tree inside the sidebar window: project-name
+  root, plain names coloured only by git status, top spacing.
+- Git panel: branch header, Commit / Check Diff / Push buttons, help
+  line, collapsible Staged Changes and Changes sections with bulk
+  actions inside, status-coloured entries, a composer with an inline
+  placeholder, and the commit graph below.
+- Settings panel: sectioned rows with On/Off values, theme by label,
+  x resets a row, Reload config and Command palette actions.
+- Themes panel: search row, active theme marked, flavour line per theme.
+- Extensions panel: Mason marketplace cards with install state, the
+  installed list, quick actions, and your plugin manifest.
+- Current-line git blame in the editor (700 ms delay).
+- Panel buffers no longer take file names, which keeps the tree's
+  window-override protection from ever moving them.
+
+
 ## 1.3.1 - 2026-11-02
 
 - One sidebar window, owned end to end: the file tree now renders inside
