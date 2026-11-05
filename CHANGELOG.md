@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.7.1
+
+Robustness fix found by a full first-run audit:
+
+- Session poisoning: a run that never built the workspace (a headless
+  or scripted invocation, or quitting during the first-run install)
+  wrote an empty per-project session on exit, and restoring that empty
+  session then suppressed the default Codex + Cursor chats on every
+  later launch of that project. Sessions are now written only by runs
+  that opened the workspace, and a stored session whose chats did not
+  come back (for example because the agent CLIs were not installed yet
+  on the first run) no longer counts as restored - the default chats
+  start, while its editor buffers still restore as before.
+
 ## 1.7.0
 
 Exactness pass against the reference's current release, plus the glass

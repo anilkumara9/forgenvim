@@ -2,6 +2,7 @@
 -- focus stays in the editor, the project session (files + chats) restores, or
 -- two default chats start (Codex visible, Cursor running behind it).
 local M = {}; local opened = false
+function M.is_open() return opened end
 function M.open()
   if opened then return end; opened = true
   local dir = vim.fn.argv(0)

@@ -14,6 +14,12 @@ function M.file()
 end
 function M.save()
   if M.clean or M.busy then return end
+  -- A session is only written by a run that actually built the workspace.
+  -- A headless or scripted invocation (no UI, layout never opened) must
+  -- not overwrite a good session - or create an empty one that would
+  -- suppress the default chats on the next real launch.
+  local startup = package.loaded["forge.startup"]
+  if not (startup and startup.is_open and startup.is_open()) then return end
   M.busy = true
   local data = { cwd = vim.fn.getcwd(), buffers = {}, agents = {}, saved_at = os.time() }
   local agents = package.loaded["forge.agents"]
@@ -51,8 +57,15 @@ function M.restore()
     end
   end
   local agents = require("forge.agents")
-  for _, a in ipairs(data.agents or {}) do agents.new(a.name, { uuid = a.uuid, label = a.label }) end
-  return true
+  local restored_agents = 0
+  for _, a in ipairs(data.agents or {}) do
+    if agents.new(a.name, { uuid = a.uuid, label = a.label }) then restored_agents = restored_agents + 1 end
+  end
+  -- A stored session with no live chats (written before the agent CLIs
+  -- were installed, or after an interrupted first run) does not count as
+  -- restored: the caller falls back to the default chats. Editor buffers
+  -- above still restore either way.
+  return restored_agents > 0
 end
 function M.quit() M.exiting = true; M.save(); vim.cmd("qa") end
 vim.api.nvim_create_user_command("ForgeQuit", M.quit, {})
