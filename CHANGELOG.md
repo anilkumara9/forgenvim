@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.10.0
+
+Smarter agent detection:
+
+- Startup default chats are chosen from what the machine actually has:
+  the first two installed CLIs in priority order (Codex, Cursor Agent,
+  Gemini, Claude, OpenCode, Antigravity, Aider). With the usual pair
+  installed this is exactly Codex shown + Cursor behind; on a machine
+  with only Claude and Gemini, those two open instead of nothing.
+- The agent selector (Ctrl+]) annotates entries whose CLI is not
+  installed; picking one explains the fix instead of failing silently.
+- With no agent CLI installed, startup shows one summary notice listing
+  what it looked for; the editor is unaffected.
+- New `require("forge.agents").installed()` / `is_installed(name)`
+  helpers expose the PATH detection (Windows `.cmd` shims included).
+
 ## 1.9.0
 
 Top bar update, install hardening, and an honesty pass on the numbers:
