@@ -1,5 +1,36 @@
 # Changelog
 
+## 1.7.0
+
+Exactness pass against the reference's current release, plus the glass
+look for Windows:
+
+- Transparency is now the reference mechanism: with Terminal
+  transparency on, every highlight background is stripped except the
+  fills the chrome needs (selections, the status strip, active tabs,
+  scrollbar parts, statusline segments); floats and inactive windows
+  take the editor background, terminal panes carry only a foreground.
+  Whatever the terminal draws behind the text - Warp blur on macOS,
+  Windows Terminal acrylic on Windows - is now the editor's background
+  on every surface, popups included.
+- Windows glass package: the installer now installs the icon fonts on
+  Windows (Symbols Nerd Font and Monocraft Nerd Font at the reference's
+  pinned versions, plus JetBrainsMono Nerd Font), and a new
+  `scripts/apply-windows-terminal.ps1` turns on Windows Terminal
+  acrylic (opacity 85) with a settings backup. See docs/WINDOWS.md.
+- Context menus rebuilt as the reference's floating menu (single
+  border, cursor-anchored) with its exact per-place entries: file tree
+  (file / folder / empty), editor tab, chat tab, sidebar view, and the
+  five git places (composer, log row, staged file, unstaged file,
+  section header, empty area).
+- Scrollbars now run the reference's full option table (winblend 55,
+  always visible, mouse on, no minimap, explorer + exclusion lists)
+  with a live Settings toggle and chrome-painted track/thumb colours.
+- Formatting is on demand only (Space f / palette): the format-on-save
+  hook is gone, matching the reference.
+- Gruvbox setup matches the reference: themed terminal colours off,
+  transparency read from the setting.
+
 ## 1.6.0
 
 Full-section screenshot audit fixes (every panel exercised live):

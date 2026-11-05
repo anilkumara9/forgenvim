@@ -47,6 +47,8 @@ function M.apply()
   vim.o.shiftwidth = current.indent; vim.o.tabstop = current.indent
   vim.o.scrolloff = current.scrolloff
   vim.o.ignorecase = current.ignorecase; vim.o.smartcase = current.smartcase
+  local ok, appearance = pcall(require, "forge.appearance")
+  if ok and appearance.apply_scroll_plugin then pcall(appearance.apply_scroll_plugin) end
 end
 function M.default(key) return M.defaults[key] end
 function M.reset(key) if M.defaults[key] ~= nil then M.set(key, M.defaults[key]) end end

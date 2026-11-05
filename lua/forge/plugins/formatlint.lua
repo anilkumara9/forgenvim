@@ -14,10 +14,8 @@ return {
         sql = { "sqlfmt" }, terraform = { "terraform_fmt" }, zig = { "zigfmt" }, elixir = { "mix" },
       },
       formatters = { shfmt = { prepend_args = { "-i", "2", "-ci" } } },
-      format_on_save = function(buf)
-        if vim.g.forge_no_format or vim.b[buf].forge_no_format then return nil end
-        return { timeout_ms = 3000, lsp_format = "fallback" }
-      end,
+      -- No format_on_save: formatting is on demand only (Space f or the
+      -- palette), matching the reference behaviour.
     } },
   { "mfussenegger/nvim-lint", event = { "BufReadPost", "BufNewFile" },
     config = function()

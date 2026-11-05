@@ -41,8 +41,29 @@ anything is replaced. The installer never overwrites silently.
 | Search | `rg` and `fd` via winget in bootstrap; fzf-lua falls back cleanly if they are missing |
 | Terminal | Works in Windows Terminal, WezTerm, Alacritty; agent pane pins a dark xterm-style env for AI CLIs |
 | AI CLIs | `codex`, `agent`, `gemini`, `claude`, `opencode`, `agy`, `aider` are found on `PATH` including npm `.cmd` shims; missing ones warn, the editor still runs |
-| Fonts | Install a Nerd Font (`winget install --id DEVCOM.JetBrainsMonoNerdFont -e`) and select it in Windows Terminal settings |
+| Fonts | The installer puts Symbols Nerd Font, Monocraft Nerd Font, and JetBrainsMono Nerd Font on the system (`scripts/fonts.ps1`); select JetBrainsMono Nerd Font (or Monocraft Nerd Font) as the Windows Terminal face |
 | Native builds | Treesitter parsers and LuaSnip's jsregexp need a C compiler: Visual Studio Build Tools (bootstrap installs it) or the `zig`/`gcc` from MSYS2 |
+
+## The glass look on Windows
+
+ForgeNvim's UI is transparent by design: with Settings → Terminal
+transparency on (the default), no editor surface paints its own
+background, so your terminal's background is the editor's background,
+exactly like the reference setup over Warp on macOS. The frosted-glass
+version of that on Windows is Windows Terminal's acrylic material:
+
+1. Run `scripts\apply-windows-terminal.ps1` once. It backs up your
+   Windows Terminal `settings.json`, then sets the default profile to
+   the JetBrainsMono Nerd Font face, acrylic on, opacity 85.
+2. Restart Windows Terminal. Editor, panels, popups, and chat panes now
+   float over the frosted desktop blur.
+3. Contrast too low over a bright wallpaper? Raise opacity toward 100
+   in Windows Terminal's appearance settings, or turn Terminal
+   transparency off in ForgeNvim's Settings panel for a solid theme
+   background.
+
+WezTerm gives the same result with `window_background_opacity` plus
+`win32_system_backdrop = "Acrylic"` in its own config.
 
 ## Windows notes and limits (honest)
 

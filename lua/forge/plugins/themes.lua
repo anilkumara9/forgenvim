@@ -1,7 +1,7 @@
 -- All theme plugins, lazy-loaded.
 return {
   { "ellisonleao/gruvbox.nvim", lazy = false, priority = 1000, config = function()
-      require("gruvbox").setup({ transparent_mode = true, terminal_colors = true, inverse = false })
+      require("gruvbox").setup({ transparent_mode = require("forge.settings").get().transparent, terminal_colors = false, inverse = false })
       local id = require("forge.settings").get().theme
       if not pcall(function() require("forge.themes").apply(id) end) then vim.cmd.colorscheme("gruvbox") end
   end },

@@ -17,6 +17,9 @@ foreach ($Item in @("init.lua","lua","scripts","docs","README.md","LICENSE","Mak
 }
 New-Item -ItemType File -Force -Path (Join-Path $Dest ".forgenvim") | Out-Null
 Write-Host "Installed ForgeNvim to $Dest"
+# Icon fonts (Symbols Nerd Font, Monocraft Nerd Font, JetBrainsMono Nerd
+# Font). A font hiccup must never fail the install, so this is guarded.
+try { & (Join-Path $Src "scripts\fonts.ps1") } catch { Write-Host "Font step skipped: $($_.Exception.Message)" }
 if (Get-Command nvim -ErrorAction SilentlyContinue) {
   $env:FORGE_MINIMAL = "1"; $env:NVIM_APPNAME = $AppName
   nvim --headless "+lua print('ForgeNvim core loads OK')" +qa
@@ -24,3 +27,4 @@ if (Get-Command nvim -ErrorAction SilentlyContinue) {
   Write-Host "Neovim not found. Install: winget install Neovim.Neovim"
 }
 Write-Host "First launch installs plugins via lazy.nvim (needs internet). Run: nvim ."
+Write-Host "For the frosted-glass look in Windows Terminal, run: scripts\apply-windows-terminal.ps1"

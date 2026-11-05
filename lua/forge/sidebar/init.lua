@@ -122,6 +122,95 @@ local function revert_entry(e)
   elseif e.staged then git_ok({ "restore", "--source=HEAD", "--staged", "--worktree", "--", e.path })
   else git_ok({ "restore", "--", e.path }) end
 end
+
+-- Right-click menu for the git surfaces, with the reference entries per
+-- place: composer, commit log, changed file, section header, empty area.
+function M.in_git_context()
+  local buf = vim.api.nvim_get_current_buf()
+  if M.gitstate.comp_buf and buf == M.gitstate.comp_buf then return true end
+  if vim.b[buf].forge_panel_kind == "gitmeta" then return true end
+  if vim.b[buf].forge_sidebar and M.mode == "git" then return true end
+  return false
+end
+local function show_commit(hash)
+  local win = require("forge.tabs").focus_editor()
+  if win then
+    local b = vim.api.nvim_create_buf(false, true)
+    vim.bo[b].buftype = "nofile"; vim.bo[b].filetype = "git"
+    vim.api.nvim_buf_set_lines(b, 0, -1, false, vim.split(git_out({ "show", hash }), "\n"))
+    vim.bo[b].modifiable = false
+    vim.api.nvim_win_set_buf(win, b)
+  end
+end
+function M.context_menu()
+  local buf = vim.api.nvim_get_current_buf()
+  local show = require("forge.context_menu").show
+  local function item(label, fn) return { label = label, fn = fn } end
+  if M.gitstate.comp_buf and buf == M.gitstate.comp_buf then
+    show({
+      item("Edit commit message", function() M.focus_composer() end),
+      item("Commit staged changes", function() M.git_commit() end),
+      item("Push", function() M.git_push() end),
+    })
+    return
+  end
+  if vim.b[buf].forge_panel_kind == "gitmeta" then
+    local hash = vim.api.nvim_get_current_line():match("(%x%x%x%x%x%x%x+)")
+    if hash then
+      show({
+        item("Show commit", function() show_commit(hash) end),
+        item("Copy commit hash", function() vim.fn.setreg("+", hash); vim.notify("Copied " .. hash) end),
+      })
+    end
+    return
+  end
+  local r = git_rows[vim.api.nvim_win_get_cursor(0)[1]]
+  if r and r.kind == "entry" then
+    local e = r.entry
+    local items = {
+      item("Check Diff", function() require("forge.diff").open(vim.fn.getcwd(), e) end),
+      item("Open file", function()
+        if require("forge.tabs").focus_editor() then vim.cmd("edit " .. vim.fn.fnameescape(e.path)) end
+      end),
+    }
+    if e.staged then
+      items[#items + 1] = item("Unstage file", function() git_ok({ "restore", "--staged", "--", e.path }); M.render_git() end)
+    else
+      items[#items + 1] = item("Stage file", function() git_ok({ "add", "--", e.path }); M.render_git() end)
+    end
+    items[#items + 1] = item("Copy relative path", function() vim.fn.setreg("+", e.path); vim.notify("Copied " .. e.path) end)
+    if not e.staged then
+      items[#items + 1] = item("Revert file", function() revert_entry(e); M.render_git() end)
+    end
+    show(items)
+    return
+  end
+  if r and r.kind == "section" then
+    local g = r.group
+    local items = {
+      item("Expand / collapse", function() M.gitstate.expanded[g] = not M.gitstate.expanded[g]; M.render_git() end),
+    }
+    if g == "staged" then
+      items[#items + 1] = item("Unstage all", function() git_ok({ "restore", "--staged", "." }); M.render_git() end)
+    else
+      items[#items + 1] = item("Stage all", function() git_ok({ "add", "-A" }); M.render_git() end)
+    end
+    items[#items + 1] = item("Refresh changes", function() M.render_git() end)
+    show(items)
+    return
+  end
+  show({
+    item("Check Diff", function()
+      local st, un = git_data()
+      local e = st[1] or un[1]
+      if e then require("forge.diff").open(vim.fn.getcwd(), e) end
+    end),
+    item("Refresh changes", function() M.render_git() end),
+    item("Edit commit message", function() M.focus_composer() end),
+    item("Commit staged changes", function() M.git_commit() end),
+    item("Push", function() M.git_push() end),
+  })
+end
 function M.render_git()
   local staged, unstaged = git_data()
   local branch = git_branch()

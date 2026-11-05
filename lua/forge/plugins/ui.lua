@@ -30,7 +30,11 @@ return {
           Method = "", Module = "", Namespace = "", Null = "", Number = "", Object = "", Operator = "",
           Package = "", Property = "", String = "", Struct = "", TypeParameter = "", Variable = "" },
       } } },
-  { "mihovilrak/scroll.nvim", cond = function() return require("forge.settings").get().scrollbars end,
-    event = "VeryLazy", opts = {} },
+  { "mihovilrak/scroll.nvim", lazy = false,
+    opts = { enabled = false, visibility = "always", winblend = 55, mouse = true, minimap = false,
+      vertical = { enabled = true }, horizontal = { enabled = true },
+      explorer = { enabled = true, filetypes = { "NvimTree" }, horizontal = true },
+      excluded_filetypes = { "help", "qf", "TelescopePrompt", "lazy", "mason", "git-composer" },
+      excluded_buftypes = { "terminal", "prompt", "quickfix" } } },
   { "folke/todo-comments.nvim", event = { "BufReadPost", "BufNewFile" }, opts = {} },
 }
