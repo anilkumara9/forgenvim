@@ -28,8 +28,8 @@ local CLIS = {
 M.CLIS = CLIS
 M.order = { "codex", "cursor", "gemini", "claude", "opencode", "antigravity", "aider" }
 -- Detection: an agent is usable only when its binary is on this machine's
--- PATH (on Windows that includes .cmd shims). Nothing is assumed or
--- faked - a CLI that is not installed is reported, never simulated.
+-- PATH (on Windows that includes .cmd shims). Nothing is assumed: a CLI
+-- that is not installed is reported as such, never presented as working.
 function M.is_installed(name)
   local cli = CLIS[name]
   return cli ~= nil and vim.fn.executable(cli.bin) == 1

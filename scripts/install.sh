@@ -10,7 +10,7 @@ if [ -d "$DEST" ] && [ ! -f "$DEST/.forgenvim" ]; then
 fi
 mkdir -p "$DEST"
 # Copy config files only (not .git, docs site assets, or tests)
-for item in init.lua lua scripts docs README.md LICENSE Makefile VERSION; do
+for item in init.lua lua scripts docs README.md LICENSE Makefile VERSION lazy-lock.json; do
   [ -e "$SRC/$item" ] && cp -a "$SRC/$item" "$DEST/" 2>/dev/null || true
 done
 touch "$DEST/.forgenvim"

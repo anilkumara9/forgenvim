@@ -9,7 +9,8 @@
 $ErrorActionPreference = "Stop"
 $Candidates = @(
   (Join-Path $env:LOCALAPPDATA "Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"),
-  (Join-Path $env:LOCALAPPDATA "Packages\Microsoft.WindowsTerminalPreview_8wekyb3d8bbwe\LocalState\settings.json")
+  (Join-Path $env:LOCALAPPDATA "Packages\Microsoft.WindowsTerminalPreview_8wekyb3d8bbwe\LocalState\settings.json"),
+  (Join-Path $env:LOCALAPPDATA "Microsoft\Windows Terminal\settings.json")
 )
 $SettingsPath = $Candidates | Where-Object { Test-Path $_ } | Select-Object -First 1
 if (-not $SettingsPath) {
@@ -20,7 +21,17 @@ if (-not $SettingsPath) {
 $Stamp = Get-Date -Format "yyyyMMddHHmmss"
 Copy-Item $SettingsPath "$SettingsPath.forgenvim-bak-$Stamp"
 Write-Host "Backed up settings to $SettingsPath.forgenvim-bak-$Stamp"
-$Json = Get-Content $SettingsPath -Raw | ConvertFrom-Json
+$Raw = Get-Content $SettingsPath -Raw
+try { $Json = $Raw | ConvertFrom-Json }
+catch {
+  # Windows Terminal settings are JSONC: comments and trailing commas are
+  # common and ConvertFrom-Json rejects both. Strip comments with a
+  # string-aware pass, drop trailing commas, and parse again.
+  $Clean = [regex]::Replace($Raw, '(?s)("(?:\\.|[^"\\])*")|//[^\r\n]*|/\*.*?\*/', { param($m) if ($m.Groups[1].Success) { $m.Groups[1].Value } else { "" } })
+  $Clean = [regex]::Replace($Clean, ',(\s*[}\]])', '$1')
+  try { $Json = $Clean | ConvertFrom-Json }
+  catch { Write-Host "Could not parse settings.json even after JSONC cleanup. Edit it manually: profiles.defaults -> font.face 'JetBrainsMono Nerd Font', opacity 85, useAcrylic true."; exit 1 }
+}
 if (-not $Json.profiles) { $Json | Add-Member -NotePropertyName profiles -NotePropertyValue ([PSCustomObject]@{}) }
 if (-not $Json.profiles.defaults) { $Json.profiles | Add-Member -NotePropertyName defaults -NotePropertyValue ([PSCustomObject]@{}) }
 $Defaults = $Json.profiles.defaults

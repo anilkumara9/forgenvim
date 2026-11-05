@@ -11,7 +11,7 @@ if ((Test-Path $Dest) -and -not (Test-Path (Join-Path $Dest ".forgenvim"))) {
   Copy-Item -Recurse $Dest "$Dest.bak-$Stamp"
 }
 New-Item -ItemType Directory -Force -Path $Dest | Out-Null
-foreach ($Item in @("init.lua","lua","scripts","docs","README.md","LICENSE","Makefile","VERSION")) {
+foreach ($Item in @("init.lua","lua","scripts","docs","README.md","LICENSE","Makefile","VERSION","lazy-lock.json")) {
   $From = Join-Path $Src $Item
   if (Test-Path $From) { Copy-Item -Recurse -Force $From $Dest }
 }

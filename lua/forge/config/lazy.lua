@@ -1,6 +1,8 @@
--- lazy.nvim bootstrap + spec import. Plugins are version-pinned by lazy-lock.json
--- once generated on first install (run :Lazy lock). FORGE_MINIMAL=1 skips plugins
--- entirely so CI and the validator can load the core with zero network.
+-- lazy.nvim bootstrap + spec import. Plugin versions are pinned by the
+-- lazy-lock.json shipped in this repo (the exact set the release was
+-- tested with); :Lazy update deliberately moves past it. FORGE_MINIMAL=1
+-- skips plugins entirely so CI and the validator can load the core with
+-- zero network.
 if vim.env.FORGE_MINIMAL == "1" then return end
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then

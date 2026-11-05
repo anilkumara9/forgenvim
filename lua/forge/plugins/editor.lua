@@ -21,6 +21,6 @@ return {
   { "stevearc/aerial.nvim", cmd = { "AerialToggle", "AerialOpen" }, dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" }, opts = { layout = { default_direction = "right", min_width = 28 } } },
   { "ThePrimeagen/refactoring.nvim", dependencies = { "nvim-lua/plenary.nvim", "nvim-treesitter/nvim-treesitter" }, opts = {} },
   { "MeanderingProgrammer/render-markdown.nvim", ft = "markdown", dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" }, opts = {} },
-  { "iamcco/markdown-preview.nvim", ft = "markdown", build = function() vim.fn["mkdp#util#install"]() end },
+  { "iamcco/markdown-preview.nvim", ft = "markdown", build = "cd app && npm install" },
   { "mechatroner/rainbow_csv", ft = { "csv", "tsv" } },
 }

@@ -64,7 +64,7 @@ ripgrep + fd for search. Everything else is installed per language by Mason.
   Gruvbox Dark transparent default with 28 supported schemes.
 - **Deep tooling**: 32 LSP servers (TypeScript, Python, Rust, Go, C/C++,
   PHP, Ruby, Zig, Kotlin, SQL, Terraform, Elixir, Haskell, OCaml, Nim, Lua
-  and more), 48 Tree-sitter parsers, blink.cmp completion, formatters and
+  and more), 47 Tree-sitter parsers, blink.cmp completion, formatters and
   linters for 30+ filetypes, debuggers for Node, Go, Rust, Python, C/C++ and
   PHP, a real test runner (Neotest: Python, Go, Jest, Rust), a task runner
   (Overseer), project search and replace, code outline, refactoring menu,

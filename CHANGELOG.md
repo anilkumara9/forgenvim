@@ -1,5 +1,27 @@
 # Changelog
 
+## 1.11.0
+
+Pre-public hardening round (full section re-review):
+
+- **Plugin versions are now pinned for everyone.** The repo ships
+  `lazy-lock.json` with the exact 82 plugin commits this release was
+  tested with; fresh installs reproduce the tested set instead of
+  floating on upstream HEAD (verified: 81/82 exact, lazy.nvim itself
+  bootstraps from stable as usual). Both installers now copy the
+  lockfile into the installed config.
+- markdown-preview's build no longer fails during a fresh sync (its
+  install function is not reachable at build time in a clean session);
+  it builds via `npm install` in its app folder, verified end to end.
+- Windows Terminal glass script now tolerates real-world settings.json
+  files (comments and trailing commas, i.e. JSONC), also checks the
+  unpackaged Terminal settings path, and explains the manual values if
+  parsing still fails.
+- Windows bootstrap reports an unparseable Neovim version cleanly
+  instead of crashing.
+- Honest numbers: Tree-sitter parsers are 47 (recounted from the
+  install list; an earlier count of 48 was a miscount).
+
 ## 1.10.0
 
 Smarter agent detection:

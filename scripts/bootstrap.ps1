@@ -10,8 +10,11 @@ if (-not (Get-Command nvim -ErrorAction SilentlyContinue)) {
   Write-Host "Installing Neovim via winget..."
   if (Get-Command winget -ErrorAction SilentlyContinue) { winget install --id Neovim.Neovim -e --silent } else { Write-Host "Install Neovim 0.12+ from https://github.com/neovim/neovim/releases"; exit 1 }
 }
-$NvimVer = (nvim --version | Select-Object -First 1) -replace '.*v(\d+)\.(\d+).*', '$1.$2'
-if ([double]$NvimVer -lt 0.12) {
+try {
+  $NvimVer = (nvim --version | Select-Object -First 1) -replace '.*v(\d+)\.(\d+).*', '$1.$2'
+  $VerOk = [double]$NvimVer -ge 0.12
+} catch { $VerOk = $false; $NvimVer = "unknown" }
+if (-not $VerOk) {
   Write-Host "Neovim 0.12+ is required (found $NvimVer; the Tree-sitter and LSP stack does not run on older versions). Update: winget upgrade Neovim.Neovim"
   exit 1
 }
