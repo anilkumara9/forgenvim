@@ -8,7 +8,12 @@ $HomeDir = if ($env:FORGE_HOME) { $env:FORGE_HOME } else { Join-Path $env:LOCALA
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) { Write-Host "git is required: winget install Git.Git"; exit 1 }
 if (-not (Get-Command nvim -ErrorAction SilentlyContinue)) {
   Write-Host "Installing Neovim via winget..."
-  if (Get-Command winget -ErrorAction SilentlyContinue) { winget install --id Neovim.Neovim -e --silent } else { Write-Host "Install Neovim 0.11+ from https://github.com/neovim/neovim/releases"; exit 1 }
+  if (Get-Command winget -ErrorAction SilentlyContinue) { winget install --id Neovim.Neovim -e --silent } else { Write-Host "Install Neovim 0.12+ from https://github.com/neovim/neovim/releases"; exit 1 }
+}
+$NvimVer = (nvim --version | Select-Object -First 1) -replace '.*v(\d+)\.(\d+).*', '$1.$2'
+if ([double]$NvimVer -lt 0.12) {
+  Write-Host "Neovim 0.12+ is required (found $NvimVer; the Tree-sitter and LSP stack does not run on older versions). Update: winget upgrade Neovim.Neovim"
+  exit 1
 }
 # Optional but recommended tools (search, JS tooling, native builds)
 foreach ($Pkg in @("BurntSushi.ripgrep.MSVC","sharkdp.fd","junegunn.fzf","OpenJS.NodeJS.LTS","Microsoft.VisualStudio.2022.BuildTools")) {

@@ -48,7 +48,7 @@ Preview: add `--preview` and run `NVIM_APPNAME=nvim-preview nvim .`
 From a checkout: `./scripts/install.sh` / `.\scripts\install.ps1` — your existing
 config is backed up first, never silently replaced.
 
-Requirements: Neovim 0.11+ (0.12 recommended), Git, Node 22 for JS tooling,
+Requirements: Neovim 0.12+, Git, Node 22 for JS tooling,
 ripgrep + fd for search. Everything else is installed per language by Mason.
 `:ForgeHealth` / `scripts/doctor.sh` / `scripts\doctor.ps1` report your machine.
 
@@ -64,7 +64,7 @@ ripgrep + fd for search. Everything else is installed per language by Mason.
   Gruvbox Dark transparent default with 28 supported schemes.
 - **Deep tooling**: 32 LSP servers (TypeScript, Python, Rust, Go, C/C++,
   PHP, Ruby, Zig, Kotlin, SQL, Terraform, Elixir, Haskell, OCaml, Nim, Lua
-  and more), 55+ Tree-sitter parsers, blink.cmp completion, formatters and
+  and more), 48 Tree-sitter parsers, blink.cmp completion, formatters and
   linters for 30+ filetypes, debuggers for Node, Go, Rust, Python, C/C++ and
   PHP, a real test runner (Neotest: Python, Go, Jest, Rust), a task runner
   (Overseer), project search and replace, code outline, refactoring menu,

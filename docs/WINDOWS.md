@@ -67,7 +67,7 @@ WezTerm gives the same result with `window_background_opacity` plus
 
 ## Windows notes and limits (honest)
 
-- Use Neovim 0.11+ (0.12 recommended). `winget install Neovim.Neovim` is current enough.
+- Use Neovim 0.12+. `winget install Neovim.Neovim` is current enough.
 - Ctrl+S / Ctrl+Q do not freeze Windows Terminal the way they can freeze old Unix
   terminals, so the Unix `stty -ixon` step does not apply.
 - There is no macOS-style trackpad helper on Windows; horizontal wheel /

@@ -4,7 +4,7 @@
 |---|---|
 | Layout | 20% sidebar (Files, Git, Settings, Themes, Extensions in one panel), editor in the centre, AI chat pane at 28% on the right, hand rolled segmented top bar and one global status strip |
 | AI agents | Codex, Cursor Agent, Gemini, Claude, OpenCode, Antigravity and Aider as real CLI sessions, resumable by session id; opt-in Copilot, Avante and CodeCompanion for inline AI |
-| Languages | 32 LSP servers, 55+ Tree-sitter parsers, formatters for 30+ filetypes, 11 linters |
+| Languages | 32 LSP servers, 48 Tree-sitter parsers, formatters for 30+ filetypes, 10 linters |
 | Debugging | Node, Chrome, Go, Rust, Python, C, C++, Zig, PHP |
 | Testing and tasks | Neotest (Python, Go, Jest, Rust), Overseer task runner |
 | Git | Panel with stage / unstage / revert / commit composer / log, gitsigns, Fugitive, Diffview, Neogit, lazygit |

@@ -27,8 +27,8 @@ function M.apply_highlights()
   set_hl("SidebarTabJoinSep", { fg = c.accent })
   set_hl("SidebarTabInactive", { fg = c.muted })
   set_hl("SidebarTabInactiveSep", { fg = c.sep })
-  set_hl("WinBar", { fg = c.muted })
-  set_hl("WinBarNC", { fg = c.sep })
+  set_hl("WinBar", { fg = c.muted, bg = c.bar })
+  set_hl("WinBarNC", { fg = c.sep, bg = c.bar })
   set_hl("WinSeparator", { fg = c.sep })
   set_hl("VertSplit", { fg = c.sep })
   -- Statusline
@@ -118,6 +118,7 @@ local selection_fill = { Visual = true, VisualNOS = true, VisualNC = true, Searc
 local function keeps_fill(name)
   if selection_fill[name] then return true end
   if name == "StatusLine" or name == "StatusLineNC" then return true end
+  if name == "WinBar" or name == "WinBarNC" then return true end
   if name == "PaneTabActive" or name == "SidebarTabActive" then return true end
   if name:sub(1, 6) == "Scroll" or name:sub(1, 2) == "SL" then return true end
   return false

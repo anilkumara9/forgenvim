@@ -1,5 +1,29 @@
 # Changelog
 
+## 1.9.0
+
+Top bar update, install hardening, and an honesty pass on the numbers:
+
+- The top bar now reads as one bar: the winbar row carries the theme's
+  bar fill continuously across the sidebar, editor, and chat strips,
+  framing the transparent editor between the filled top bar and the
+  filled statusline. Active view pill, active editor tab, and active
+  chat keep their accent fills; the transparency strip preserves the
+  bar fill.
+- Install: the Unix bootstrap previously only warned on an old or
+  missing Neovim and installed anyway, leaving a broken editor. Both
+  bootstraps now require Neovim 0.12+ (the Tree-sitter/LSP stack needs
+  it) and stop with clear guidance; the README and Windows guide state
+  the same minimum. The from-checkout installer was re-tested end to
+  end (copy, marker, clean boot of the installed copy).
+- Doc numbers corrected to the measured truth: 48 Tree-sitter parsers
+  (was "55+") and 10 linters (was "11"); 32 LSP servers and formatters
+  for 33 filetypes were re-counted and stand.
+- Verified this round: layout holds at 80 and 100 columns; the
+  transparency pass costs about 1 ms per window open across ~1,360
+  highlight groups; :ForgeRestart is wired to Neovim 0.12's :restart
+  with the session saved first.
+
 ## 1.8.0
 
 Scale and release-readiness pass:
