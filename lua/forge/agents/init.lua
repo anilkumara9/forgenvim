@@ -27,6 +27,18 @@ local CLIS = {
 }
 M.CLIS = CLIS
 M.order = { "codex", "cursor", "gemini", "claude", "opencode", "antigravity", "aider" }
+-- Detection: an agent is usable only when its binary is on this machine's
+-- PATH (on Windows that includes .cmd shims). Nothing is assumed or
+-- faked - a CLI that is not installed is reported, never simulated.
+function M.is_installed(name)
+  local cli = CLIS[name]
+  return cli ~= nil and vim.fn.executable(cli.bin) == 1
+end
+function M.installed()
+  local out = {}
+  for _, name in ipairs(M.order) do if M.is_installed(name) then out[#out + 1] = name end end
+  return out
+end
 local function width() return math.max(24, math.floor(vim.o.columns * 0.28)) end
 local function valid() return M.win and vim.api.nvim_win_is_valid(M.win) end
 local function valid_id(v) return type(v) == "string" and #v >= 6 and #v <= 80 and v:match("^[%w%-_]+$") ~= nil end
@@ -184,9 +196,20 @@ function M.close(id)
   persist()
 end
 function M.select()
-  local labels = {}; for _, n in ipairs(M.order) do labels[#labels+1] = CLIS[n].label end
+  local labels, by_label = {}, {}
+  for _, n in ipairs(M.order) do
+    local text = CLIS[n].label .. (M.is_installed(n) and "" or "  (not installed)")
+    labels[#labels + 1] = text
+    by_label[text] = n
+  end
   vim.ui.select(labels, { prompt = "New chat - choose CLI:" }, function(choice)
-    for n, c in pairs(CLIS) do if c.label == choice then M.new(n) end end
+    local name = choice and by_label[choice]
+    if not name then return end
+    if not M.is_installed(name) then
+      vim.notify(CLIS[name].label .. " (" .. CLIS[name].bin .. ") is not installed on this machine; install it or pick an installed agent", vim.log.levels.WARN)
+      return
+    end
+    M.new(name)
   end)
 end
 function M.snapshot()

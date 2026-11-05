@@ -13,9 +13,20 @@ function M.open()
   local restored = false
   if require("forge.settings").get().session_restore and not session.clean then restored = session.restore() end
   if not restored and vim.env.FORGE_NO_DEFAULT_AGENTS ~= "1" then
+    -- Default chats come from what this machine actually has: the first
+    -- two installed CLIs in priority order (Codex, then Cursor Agent,
+    -- then the rest). With the reference pair installed this is exactly
+    -- Codex shown + Cursor behind; on a machine with only, say, Claude,
+    -- Claude opens instead of nothing.
     local agents = require("forge.agents")
-    local first = agents.new("codex"); agents.new("cursor")
-    if first then agents.show(first) end
+    local picks = agents.installed()
+    if #picks == 0 then
+      vim.notify("No AI chat CLI on PATH (codex, agent, gemini, claude, opencode, agy, aider). Install one to use the chat pane; the editor works without it.", vim.log.levels.WARN)
+    else
+      local first = agents.new(picks[1])
+      local second = picks[2] and agents.new(picks[2]) or nil
+      if first then agents.show(first) elseif second then agents.show(second) end
+    end
   end
   if vim.api.nvim_win_is_valid(editor) then vim.api.nvim_set_current_win(editor) end
   vim.cmd.stopinsert()
