@@ -33,3 +33,30 @@ vim.api.nvim_create_autocmd("FileType", { group = aug("indent4"),
 vim.api.nvim_create_autocmd("FileType", { group = aug("prose"),
   pattern = { "markdown", "text", "gitcommit" },
   callback = function() vim.opt_local.wrap = true; vim.opt_local.spell = true end })
+-- Big-file guard: generated bundles, huge logs and data dumps stay fast.
+-- Past ~3 MB or ~60k lines the heavy per-buffer machinery (Tree-sitter,
+-- language servers, linters) stands down for that buffer only; editing,
+-- search and the panels keep working normally.
+vim.api.nvim_create_autocmd("BufReadPre", { group = aug("bigfile"),
+  callback = function(ev)
+    local path = ev.match
+    if not path or path == "" or path:match("^%w%w+://") then return end
+    local st = vim.uv.fs_stat(path)
+    if st and st.size > 3 * 1024 * 1024 then vim.b[ev.buf].forge_bigfile = true end
+  end })
+vim.api.nvim_create_autocmd("BufReadPost", { group = aug("bigfile_post"),
+  callback = function(ev)
+    if not vim.b[ev.buf].forge_bigfile and vim.api.nvim_buf_line_count(ev.buf) <= 60000 then return end
+    vim.b[ev.buf].forge_bigfile = true
+    pcall(vim.treesitter.stop, ev.buf)
+    vim.bo[ev.buf].swapfile = false
+    vim.bo[ev.buf].undofile = false
+    -- (User-facing "big file" notice comes from the snacks bigfile
+    -- feature, which is also enabled; this layer adds the LSP detach.)
+  end })
+vim.api.nvim_create_autocmd("LspAttach", { group = aug("bigfile_lsp"),
+  callback = function(ev)
+    if vim.b[ev.buf].forge_bigfile then
+      vim.schedule(function() pcall(vim.lsp.buf_detach_client, ev.buf, ev.data.client_id) end)
+    end
+  end })

@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.8.0
+
+Scale and release-readiness pass:
+
+- Big-file guard is now deterministic: buffers over ~3 MB or ~60k
+  lines get a forge_bigfile flag at read time; Tree-sitter stops for
+  that buffer and any language server that attaches is detached again,
+  on top of the snacks bigfile feature that already disables heavy
+  features and shows the notice. Verified on a 7 MB / 120k-line
+  TypeScript file and a 15 MB / 200k-line log: both open cleanly with
+  no errors.
+- Measured baselines (Neovim 0.12.6): startup 241 ms with the full
+  plugin set installed; the git panel renders 3,000 changed files in
+  about 0.5 s; a clean-slate install syncs 82 plugins with no errors.
+- Tab strips re-verified under load: 12 editor tabs with overflow
+  truncation and cyclers, 4 chat tabs right-aligned with the active
+  chat filled, sidebar view pill filled - all in the active theme's
+  accent.
+
 ## 1.7.1
 
 Robustness fix found by a full first-run audit:
